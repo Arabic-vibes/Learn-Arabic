@@ -121,12 +121,12 @@
                         </a>
                     </div>
                         <iframe 
+                        id="coursePDF"
                         src="https://docs.google.com/gview?url=https://Arabic-vibes.github.io/Learn-Arabic/pdf/arabic_introduction.pdf&embedded=true"
                         width="100%" 
                         height="600px"
                         style="border: none; border-radius: 10px;">
                         </iframe>     
-
            </div>
                 <div class="course-highlights">
                     <h3>What You'll Learn</h3>
@@ -653,6 +653,26 @@ Are you ready to begin your learning journey?`;
         // You can call these functions in your form submission handler:
         // showEnrollmentSuccessNotification(); // For success
         // showEnrollmentErrorNotification(); // For error
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const pdfIframe = document.getElementById('coursePDF');
+            const courseSection = document.getElementById('course');
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !pdfIframe.src) {
+                        pdfIframe.src = pdfIframe.dataset.src;
+                        observer.unobserve(entry.target); // load only once
+                    }
+                });
+            }, {
+                threshold: 0.4 // PDF loads when 40% of section is visible
+            });
+
+            observer.observe(courseSection);
+        });
+
+
     </script>
 </body>
 </html>
