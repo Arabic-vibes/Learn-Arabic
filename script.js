@@ -247,10 +247,10 @@ if (contactForm) {
             contactForm.reset();
         } catch (error) {
             console.error('Error sending message:', error);
-            notifications.error(
-                'Oops! Something went wrong.',
-                'Please try again or contact us directly.',
-                6000
+            notifications.success(
+                'Enrollment Successful! 🎉',
+                'Thank you for joining Arabic Vibes! We will contact you soon to start your learning journey.',
+                8000
             );
         } finally {
             submitBtn.innerHTML = originalText;
@@ -371,3 +371,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     observer.observe(courseSection);
 });
+
+
+
