@@ -547,6 +547,18 @@
                 }
             }
 
+            bindCountryDropdownEvents() {
+                const dropdown = document.getElementById('countryDropdown');
+                const searchInput = document.getElementById('countrySearch');
+
+                dropdown.querySelectorAll('.country-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        const country = JSON.parse(option.dataset.country);
+                        this.selectCountry(country, searchInput, dropdown);
+                    });
+                });
+            }
+
             getFlagEmoji(countryCode) {
                 const codePoints = countryCode
                     .toUpperCase()
@@ -575,6 +587,8 @@
                             <span style="margin-left: auto; opacity: 0.7;">${country.code}</span>
                         </div>
                     `).join('');
+                this.bindCountryDropdownEvents();
+
             }
 
             filterCountries(searchTerm) {
@@ -605,17 +619,18 @@
 
                 // Handle search input
                 searchInput.addEventListener('input', (e) => {
-                    this.filterCountries(e.target.value);
+                    const value = e.target.value.trim();
+                    if (value.length === 0) {
+                        // If empty, show full list again
+                        this.filteredCountries = [...this.countries];
+                        this.renderCountryDropdown();
+                    } else {
+                        this.filterCountries(value);
+                    }
                 });
 
                 // Handle country selection
-                dropdown.addEventListener('click', (e) => {
-                    const option = e.target.closest('.country-option');
-                    if (option && option.dataset.country) {
-                        const country = JSON.parse(option.dataset.country);
-                        this.selectCountry(country, searchInput, dropdown);
-                    }
-                });
+                
 
                 // Handle click outside to close dropdown
                 document.addEventListener('click', (e) => {
@@ -633,44 +648,36 @@
             }
 
             selectCountry(country, searchInput, dropdown) {
-                // Set data attributes directly on the input
+                // Set values for the selected country
                 searchInput.value = `${country.flag} ${country.name} (${country.code})`;
                 searchInput.placeholder = `${country.flag} ${country.name} (${country.code})`;
                 searchInput.dataset.selectedCode = country.code;
                 searchInput.dataset.selectedCountry = country.name;
+
+                // ✅ Fix: Update the selected country so it persists outside
+                this.selectedCountry = country;
 
                 // Close dropdown
                 searchInput.setAttribute('readonly', true);
                 dropdown.style.display = 'none';
 
-                // Reset filtered dropdown (optional)
-                this.filteredCountries = [...this.countries];
-                dropdown.innerHTML = this.filteredCountries.map(c => `
-                    <div class="country-option" data-country='${JSON.stringify(c)}'>
-                        <span>${c.flag}</span>
-                        <span>${c.name}</span>
-                        <span style="margin-left: auto; opacity: 0.7;">${c.code}</span>
-                    </div>
-                `).join('');
-                searchInput.value = `${country.flag} ${country.name} (${country.code})`;
-                searchInput.placeholder = `${country.flag} ${country.name} (${country.code})`;
-                searchInput.dataset.selectedCode = country.code;
-                searchInput.dataset.selectedCountry = country.name;
-                
-                // Mark as readonly again
-                searchInput.setAttribute('readonly', true);
-                dropdown.style.display = 'none';
-                
-                // Reset filtered countries
+                // Reset the dropdown list
                 this.filteredCountries = [...this.countries];
                 this.renderCountryDropdown();
             }
 
+
             closeDropdown(searchInput, dropdown) {
                 dropdown.style.display = 'none';
                 searchInput.setAttribute('readonly', true);
-                searchInput.value = `${this.selectedCountry.flag} ${this.selectedCountry.name} (${this.selectedCountry.code})`;
-                searchInput.placeholder = `${this.selectedCountry.flag} ${this.selectedCountry.name} (${this.selectedCountry.code})`;
+                
+                // ✅ Fix: Use the actual selected country from the input's dataset, not the class property
+                const selectedCode = searchInput.dataset.selectedCode || '+20';
+                const selectedCountry = searchInput.dataset.selectedCountry || 'Egypt';
+                const selectedFlag = this.getFlagEmojiFromCode(selectedCode);
+                
+                searchInput.value = `${selectedFlag} ${selectedCountry} (${selectedCode})`;
+                searchInput.placeholder = `${selectedFlag} ${selectedCountry} (${selectedCode})`;
                 
                 // Reset search
                 this.filteredCountries = [...this.countries];
@@ -738,6 +745,8 @@
                         </div>
                     `).join('');
                 });
+               
+
 
                 // Handle selection
                 dropdown.addEventListener('click', (e) => {
