@@ -77,7 +77,7 @@
                 </div>
                 <div class="floating-card card-3">
                     <i class="fas fa-users"></i>
-                    <span>All Ages Welcome</span>
+                    <span>All Ages are Welcome</span>
                 </div>
             </div>
         </div>
@@ -293,10 +293,10 @@
                                             type="text" 
                                             id="countrySearch" 
                                             class="country-search" 
-                                            placeholder="🇪🇬 Egypt (+20)" 
+                                            placeholder="Select country..." 
                                             readonly
-                                            data-selected-code="+20"
-                                            data-selected-country="Egypt"
+                                            data-selected-code=""
+                                            data-selected-country=""
                                         >
                                         <div class="country-dropdown" id="countryDropdown">
                                             <div class="loading">Loading countries...</div>
@@ -510,7 +510,7 @@
             constructor() {
                 this.countries = [];
                 this.filteredCountries = [];
-                this.selectedCountry = { name: 'Egypt', code: '+20', flag: '🇪🇬' };
+                this.selectedCountry = null;
                 this.friendCounter = 0;
                 
                 this.init();
@@ -685,32 +685,33 @@
             }
 
             createFriendCountrySelector(friendId) {
-                const selectorId = `friend-${friendId}-country`;
-                const dropdownId = `friend-${friendId}-dropdown`;
-                
-                return `
-                    <div class="country-code-container">
-                        <input 
-                            type="text" 
-                            id="${selectorId}" 
-                            class="country-search" 
-                            placeholder="🇪🇬 Egypt (+20)" 
-                            readonly
-                            data-selected-code="+20"
-                            data-selected-country="Egypt"
-                        >
-                        <div class="country-dropdown" id="${dropdownId}">
-                            ${this.countries.map(country => `
-                                <div class="country-option" data-country='${JSON.stringify(country)}'>
-                                    <span>${country.flag}</span>
-                                    <span>${country.name}</span>
-                                    <span style="margin-left: auto; opacity: 0.7;">${country.code}</span>
-                                </div>
-                            `).join('')}
+                    const selectorId = `friend-${friendId}-country`;
+                    const dropdownId = `friend-${friendId}-dropdown`;
+                    
+                    return `
+                        <div class="country-code-container">
+                            <input 
+                                type="text" 
+                                id="${selectorId}" 
+                                class="country-search" 
+                                placeholder="Select country..." 
+                                readonly
+                                data-selected-code=""
+                                data-selected-country=""
+                            >
+                            <div class="country-dropdown" id="${dropdownId}">
+                                ${this.countries.map(country => `
+                                    <div class="country-option" data-country='${JSON.stringify(country)}'>
+                                        <span>${country.flag}</span>
+                                        <span>${country.name}</span>
+                                        <span style="margin-left: auto; opacity: 0.7;">${country.code}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
-                    </div>
-                `;
-            }
+                    `;
+                }
+
 
             setupFriendCountrySelector(friendId) {
                 const searchInput = document.getElementById(`friend-${friendId}-country`);
